@@ -1,0 +1,22 @@
+{
+  "name": "quantity-measurement-app-frontend",
+  "version": "1.0.0",
+  "description": "Frontend application for Quantity Measurement App",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "quantity",
+    "measurement",
+    "frontend"
+  ],
+  "author": "Prathamkacher",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Prathamkacher/QuantityMeasurementApp-Frontend.git"
+  }
+}

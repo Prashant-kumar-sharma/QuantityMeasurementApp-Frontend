@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="../css/style.css">
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+</head>
+<body>
+
+<div class="main-container">
+
+<!-- LEFT PANEL -->
+<div class="left-panel">
+    <img src="https://i.ibb.co/6cKyTTfw/Whats-App-Image-2026-03-25-at-11-21-00-AM.jpg" alt="measurement">
+    <h2>QUANTITY MEASUREMENT APP</h2>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <span class="tab active">LOGIN</span>
+        <span class="tab" onclick="window.location.href='signup.html'">SIGNUP</span>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm">
+
+        <div class="input-group">
+            <label>Email Id</label>
+            <input type="email" id="loginEmail" autocomplete="off" required>
+        </div>
+
+        <div class="input-group password-field">
+            <label>Password</label>
+            <input type="password" id="loginPassword" autocomplete="new-password" required>
+            <i class="fa-solid fa-eye-slash toggle-password"></i>
+        </div>
+
+        <button type="submit">Login</button>
+
+    </form>
+
+</div>
+
+</div>
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>

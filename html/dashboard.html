@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quantity Measurement Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+</head>
+<body class="dashboard-body">
+
+  <div class="header"> 
+    <h2>Welcome To Quantity Measurement</h2> 
+    <button id="logoutBtn">Logout</button> 
+  </div> 
+
+  <main class="dash-container">
+    
+    <section class="dash-section">
+      <h2 class="dash-label">CHOOSE TYPE</h2>
+      <div class="type-cards">
+        <button class="type-card active" onclick="selectType('Length', this)">
+          <span class="icon">📏</span>
+          <span class="title">Length</span>
+        </button>
+        <button class="type-card" onclick="selectType('Weight', this)">
+          <span class="icon">⚖️</span>
+          <span class="title">Weight</span>
+        </button>
+        <button class="type-card" onclick="selectType('Temperature', this)">
+          <span class="icon">🌡️</span>
+          <span class="title">Temperature</span>
+        </button>
+        <button class="type-card" onclick="selectType('Volume', this)">
+          <span class="icon">🧊</span>
+          <span class="title">Volume</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="dash-section">
+      <h2 class="dash-label">CHOOSE ACTION</h2>
+      <div class="action-buttons">
+        <button class="action-btn" id="btn-comparison" onclick="selectAction('Comparison', this)">Comparison</button>
+        <button class="action-btn active" id="btn-conversion" onclick="selectAction('Conversion', this)">Conversion</button>
+        <button class="action-btn" id="btn-arithmetic" onclick="selectAction('Arithmetic', this)">Arithmetic</button>
+      </div>
+    </section>
+
+    <section class="dash-workspace" id="workspace">
+      </section>
+
+  </main>
+
+  <script src="../js/dashboard.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      initDashboard();
+    });
+  </script>
+</body>
+</html>
