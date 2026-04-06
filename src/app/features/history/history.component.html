@@ -1,0 +1,29 @@
+<div class="history-container">
+
+  <!-- Header -->
+  <div class="history-header">
+    <h2>Your History</h2>
+    <button class="back-btn" (click)="goBack()">⬅ Back</button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="historyList.length === 0" class="empty">
+    No history found
+  </div>
+
+  <!-- History List -->
+  <div class="history-list">
+    <div 
+        class="history-card" 
+        *ngFor="let item of historyList; let i = index"
+        [ngStyle]="{
+            'background-color': getRandomColor(i).light,
+            'border-left': '6px solid ' + getRandomColor(i).dark
+        }"
+        >
+        <div class="action">{{ item.action }}</div>
+        <div class="result">Result: {{ item.result }}</div>
+    </div>
+  </div>
+
+</div>

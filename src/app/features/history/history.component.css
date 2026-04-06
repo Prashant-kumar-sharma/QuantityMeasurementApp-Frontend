@@ -1,0 +1,141 @@
+/* Container */
+.history-container {
+  padding: 30px;
+}
+
+/* Header */
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap; /* important for responsiveness */
+}
+
+.history-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Back Button */
+.back-btn {
+  background: #4f6ef7;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: #3f5de0;
+}
+
+/* Empty */
+.empty {
+  text-align: center;
+  color: #888;
+  margin-top: 40px;
+  font-size: 16px;
+}
+
+/* List */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Card */
+.history-card {
+  padding: 16px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: 0.2s;
+  border-left: 6px solid;
+  word-break: break-word; /* prevents overflow */
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Text */
+.action {
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+.result {
+  margin-top: 5px;
+  color: #555;
+  font-size: 14px;
+}
+
+/* ========================= */
+/* 📱 MOBILE (≤ 600px) */
+/* ========================= */
+@media (max-width: 600px) {
+
+  .history-container {
+    padding: 15px;
+  }
+
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .history-header h2 {
+    font-size: 20px;
+  }
+
+  .back-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .history-card {
+    padding: 14px;
+  }
+
+  .action {
+    font-size: 14px;
+  }
+
+  .result {
+    font-size: 13px;
+  }
+}
+
+/* ========================= */
+/* 📱 TABLET (601px - 900px) */
+/* ========================= */
+@media (max-width: 900px) {
+
+  .history-container {
+    padding: 20px;
+  }
+
+  .history-header h2 {
+    font-size: 22px;
+  }
+
+  .history-card {
+    padding: 15px 18px;
+  }
+}
+
+.history-card {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

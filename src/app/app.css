@@ -1,0 +1,94 @@
+/* Navbar */
+.top-header {
+  background-color: #4f6ef7;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(79,110,247,0.25);
+}
+
+/* Left spacer (balances center title) */
+.nav-left {
+  width: 120px;
+}
+
+/* Title */
+.header-title {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  flex: 1;
+}
+
+/* Buttons container */
+.nav-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  min-width: 120px;
+}
+
+/* Buttons */
+.nav-btn {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 7px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Main */
+.main-content {
+  min-height: calc(100vh - 72px);
+  background-color: #eef0f8;
+}
+
+/* ========================= */
+/* 📱 MOBILE */
+/* ========================= */
+@media (max-width: 600px) {
+
+  .top-header {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .nav-left {
+    display: none;
+  }
+
+  .header-title {
+    font-size: 18px;
+  }
+
+  .nav-actions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    backdrop-filter: blur(6px);
+  }
+}

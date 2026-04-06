@@ -1,0 +1,62 @@
+<div class="arith-container">
+
+  <div class="op-row">
+    <label class="panel-label">OPERATION</label>
+    <div class="op-pills">
+      <div class="op-pill" *ngFor="let op of operations"
+           [class.active]="selectedOperation === op.id"
+           (click)="selectedOperation = op.id; resetState()">
+        {{ op.label }}
+      </div>
+    </div>
+  </div>
+
+  <div class="inputs-row">
+    <div class="panel">
+      <label class="panel-label">VALUE 1</label>
+      <div class="input-card">
+        <input type="number" class="value-input" [(ngModel)]="value1" placeholder="0" />
+        <div class="card-divider"></div>
+        <select class="unit-select" [(ngModel)]="unit1">
+          <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="operator-badge-col">
+      <div class="operator-badge">{{ operatorSymbol }}</div>
+    </div>
+
+    <div class="panel">
+      <label class="panel-label">VALUE 2</label>
+      <div class="input-card">
+        <input type="number" class="value-input" [(ngModel)]="value2" placeholder="0" />
+        <div class="card-divider"></div>
+        <select class="unit-select" [(ngModel)]="unit2">
+          <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-btn-row">
+    <button class="calc-btn" (click)="calculate()" [disabled]="isLoading">
+      <span *ngIf="!isLoading">Calculate</span>
+      <span *ngIf="isLoading">Calculating...</span>
+    </button>
+  </div>
+
+  <div *ngIf="error" class="error-msg">⚠ {{ error }}</div>
+
+  <div class="result-card" *ngIf="resultValue !== null && !isLoading">
+    <div class="result-top">
+      <span class="result-label">RESULT</span>
+    </div>
+    <div class="result-bottom">
+      <div class="result-value">{{ resultValue }}</div>
+      <select class="result-unit-select" [(ngModel)]="resultUnit" (ngModelChange)="calculate()">
+        <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
+      </select>
+    </div>
+  </div>
+</div>

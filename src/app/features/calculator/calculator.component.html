@@ -1,0 +1,41 @@
+<div class="compare-container">
+
+  <!-- FROM panel -->
+  <div class="panel">
+    <label class="panel-label">FROM</label>
+    <div class="input-card">
+      <input type="number" class="value-input" [(ngModel)]="value1" placeholder="0" />
+      <div class="card-divider"></div>
+      <select class="unit-select" [(ngModel)]="unit1">
+        <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- TO panel -->
+  <div class="panel">
+    <label class="panel-label">TO</label>
+    <div class="input-card">
+      <input type="number" class="value-input" [(ngModel)]="value2" placeholder="0" />
+      <div class="card-divider"></div>
+      <select class="unit-select" [(ngModel)]="unit2">
+        <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
+      </select>
+    </div>
+  </div>
+
+</div>
+
+<div class="action-btn-row">
+  <button class="calc-btn" (click)="compare()" [disabled]="!value1 || !value2">Compare</button>
+</div>
+
+
+<!-- Error -->
+<div *ngIf="error" class="error-msg">⚠ {{ error }}</div>
+
+<!-- Result -->
+<div *ngIf="compareResult !== null" class="compare-result-card" [class.equal]="compareResult" [class.notequal]="!compareResult">
+  <span class="compare-icon">{{ compareResult ? '✓' : '✕' }}</span>
+  <span class="compare-text">The two quantities are <strong>{{ compareResult ? 'EQUAL' : 'NOT EQUAL' }}</strong></span>
+</div>
