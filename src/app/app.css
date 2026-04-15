@@ -1,94 +1,187 @@
-/* Navbar */
-.top-header {
-  background-color: #4f6ef7;
-  height: 72px;
+/* Layout & Shell */
+.app-shell {
+  min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
+  flex-direction: column;
+}
+
+.main-nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1.25rem 0;
   position: sticky;
   top: 0;
-  z-index: 100;
-  width: 100%;
-  box-shadow: 0 2px 8px rgba(79,110,247,0.25);
+  z-index: 1000;
 }
 
-/* Left spacer (balances center title) */
-.nav-left {
-  width: 120px;
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Title */
-.header-title {
-  color: #fff;
-  font-size: 22px;
-  font-weight: 700;
-  text-align: center;
-  flex: 1;
+.brand {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-/* Buttons container */
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
 .nav-actions {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  min-width: 120px;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-/* Buttons */
+/* Auth Buttons */
+.auth-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
 .nav-btn {
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.4);
-  padding: 7px 14px;
-  border-radius: 5px;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  font-size: 14px;
-  transition: background 0.2s;
+  border-radius: var(--radius);
+  transition: all 0.2s;
 }
 
-.nav-btn:hover {
-  background: rgba(255,255,255,0.3);
+.nav-btn.secondary {
+  background: var(--background);
+  color: var(--text-main);
+  border: 1px solid var(--border);
 }
 
-/* Main */
-.main-content {
-  min-height: calc(100vh - 72px);
-  background-color: #eef0f8;
+.nav-btn.secondary:hover {
+  border-color: var(--primary);
+  background: var(--surface-hover);
 }
 
-/* ========================= */
-/* 📱 MOBILE */
-/* ========================= */
-@media (max-width: 600px) {
+/* User Profile */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
 
-  .top-header {
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    padding: 12px;
-    gap: 10px;
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.user-profile:hover {
+  border-color: var(--primary);
+  background: var(--surface-hover);
+}
+
+.avatar-container {
+  width: 36px;
+  height: 36px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.nav-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  transition: border-color 0.2s ease;
+}
+
+.nav-avatar:hover {
+  border-color: var(--primary);
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-display-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.nav-btn.logout {
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  transition: color 0.2s;
+}
+
+.nav-btn.logout:hover {
+  color: var(--error);
+}
+
+/* Main Content Wrapper */
+.app-content {
+  flex-grow: 1;
+  padding: 3rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .nav-container {
+    padding: 0 1.25rem;
   }
-
-  .nav-left {
+  
+  .user-display-name {
     display: none;
   }
+}
 
-  .header-title {
-    font-size: 18px;
-  }
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
 
-  .nav-actions {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .nav-btn {
-    flex: 1;
-    min-width: 120px;
-    text-align: center;
-    backdrop-filter: blur(6px);
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }

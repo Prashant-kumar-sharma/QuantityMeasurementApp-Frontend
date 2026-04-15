@@ -1,7 +1,8 @@
-import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { QuantityMeasurementService, QuantityInputDTO } from '../../core/services/quantity-measurement.service';
+import { finalize } from 'rxjs';
+import { QuantityMeasurementService, QuantityInputDTO, QuantityMeasurementDTO } from '../../core/services/quantity-measurement.service';
 
 @Component({
   selector: 'app-arithmetic',
@@ -21,6 +22,7 @@ export class ArithmeticComponent implements OnChanges {
   ];
 
   selectedOperation: string = 'add';
+
   units: Record<string, string[]> = {
     length: ['FEET', 'INCHES', 'YARDS', 'CENTIMETERS'],
     weight: ['MILLIGRAM', 'GRAM', 'KILOGRAM', 'POUND', 'TONNE'],
@@ -29,23 +31,29 @@ export class ArithmeticComponent implements OnChanges {
   };
 
   value1: number = 1;
-  unit1: string = 'FEET';
+  unit1: string = 'KILOGRAM';
+
   value2: number = 1;
-  unit2: string = 'INCHES';
+  unit2: string = 'GRAM';
+
   resultValue: number | null = null;
-  resultUnit: string = 'FEET';
+  resultUnit: string = 'KILOGRAM';
   error: string | null = null;
   isLoading: boolean = false;
 
-  constructor(private svc: QuantityMeasurementService, private cdr: ChangeDetectorRef) {}
+  constructor(private svc: QuantityMeasurementService) {}
 
   get currentUnits(): string[] {
     return this.units[this.selectedType] || this.units['length'];
   }
 
   get operatorSymbol(): string {
-    const op = this.operations.find(o => o.id === this.selectedOperation);
-    return op ? op.label.split('(')[1].replace(')', '') : '+';
+    switch (this.selectedOperation) {
+      case 'subtract': return '-';
+      case 'multiply': return '×';
+      case 'divide': return '÷';
+      default: return '+';
+    }
   }
 
   private getMeasurementType(): string {
@@ -63,24 +71,29 @@ export class ArithmeticComponent implements OnChanges {
       this.unit1 = this.currentUnits[0];
       this.unit2 = this.currentUnits[1] ?? this.currentUnits[0];
       this.resultUnit = this.currentUnits[0];
-      this.resetState();
+      this.resultValue = null;
     }
   }
 
-  resetState() {
-    this.resultValue = null;
-    this.error = null;
-    this.isLoading = false;
-    this.cdr.detectChanges(); // Force UI reset
-  }
-
   calculate() {
-    if (this.value1 === null || this.value2 === null) return;
-    
     this.error = null;
     this.resultValue = null;
     this.isLoading = true;
-    this.cdr.detectChanges(); // Force "Calculating..." state to show
+
+    // Input validation
+    if (this.value1 === null || this.value1 === undefined || this.value2 === null || this.value2 === undefined || 
+        isNaN(this.value1) || isNaN(this.value2)) {
+      this.error = 'Please enter valid numbers for both values';
+      this.isLoading = false;
+      return;
+    }
+
+    // Division by zero validation
+    if (this.selectedOperation === 'divide' && this.value2 === 0) {
+      this.error = 'Cannot divide by zero';
+      this.isLoading = false;
+      return;
+    }
 
     const type = this.getMeasurementType();
     const input: QuantityInputDTO = {
@@ -97,17 +110,29 @@ export class ArithmeticComponent implements OnChanges {
       default: call$ = this.svc.add(input); break;
     }
 
-    call$.subscribe({
-      next: (res: any) => {
-        this.resultValue = res.resultValue;
-        this.isLoading = false; // Reset loading
-        this.cdr.detectChanges(); // Force UI update
+    call$.pipe(
+      finalize(() => {
+        setTimeout(() => this.isLoading = false, 100);
+      })
+    ).subscribe({
+      next: (res: QuantityMeasurementDTO) => {
+        this.resultValue = typeof res.resultValue === 'number' ? res.resultValue : null;
       },
       error: (err) => {
         this.error = err?.error?.message || 'Calculation failed';
-        this.isLoading = false;
-        this.cdr.detectChanges();
+        this.resultValue = null;
       }
     });
+  }
+
+  setOperator(op: string) {
+    const opMap: Record<string, string> = {
+      '+': 'add',
+      '-': 'subtract',
+      '*': 'multiply',
+      '/': 'divide'
+    };
+    this.selectedOperation = opMap[op] || 'add';
+    this.resultValue = null;
   }
 }

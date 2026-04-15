@@ -1,62 +1,78 @@
-<div class="arith-container">
+<div class="arithmetic-container fade-in">
+  <div class="arithmetic-layout">
+    <!-- Operand A -->
+    <div class="operand-card">
+      <div class="card-header">
+        <span class="label">Operand A</span>
+        <h4>Initial Quantity</h4>
+      </div>
+      <div class="card-body">
+        <div class="field-group">
+          <input type="number" [(ngModel)]="value1" placeholder="1.00" />
+        </div>
+        <div class="field-group">
+          <select [(ngModel)]="unit1">
+            <option *ngFor="let u of currentUnits" [value]="u">{{u | titlecase}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-  <div class="op-row">
-    <label class="panel-label">OPERATION</label>
-    <div class="op-pills">
-      <div class="op-pill" *ngFor="let op of operations"
-           [class.active]="selectedOperation === op.id"
-           (click)="selectedOperation = op.id; resetState()">
-        {{ op.label }}
+    <!-- Operator Selection -->
+    <div class="operator-controls">
+      <div class="operator-buttons">
+        <button 
+          *ngFor="let op of ['+', '-', '*', '/']" 
+          type="button"
+          [class.selected]="operatorSymbol === (op === '*' ? '×' : op === '/' ? '÷' : op)"
+          (click)="setOperator(op)">
+          {{ op === '*' ? '×' : op === '/' ? '÷' : op }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Operand B -->
+    <div class="operand-card">
+      <div class="card-header">
+        <span class="label">Operand B</span>
+        <h4>Second Quantity</h4>
+      </div>
+      <div class="card-body">
+        <div class="field-group">
+          <input type="number" [(ngModel)]="value2" placeholder="1.00" />
+        </div>
+        <div class="field-group">
+          <select [(ngModel)]="unit2">
+            <option *ngFor="let u of currentUnits" [value]="u">{{u | titlecase}}</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="inputs-row">
-    <div class="panel">
-      <label class="panel-label">VALUE 1</label>
-      <div class="input-card">
-        <input type="number" class="value-input" [(ngModel)]="value1" placeholder="0" />
-        <div class="card-divider"></div>
-        <select class="unit-select" [(ngModel)]="unit1">
-          <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
-        </select>
+  <!-- Result Summary -->
+  <div class="result-summary-section">
+    <div class="summary-card">
+      <div class="summary-header">
+        <h4>Total Result</h4>
       </div>
-    </div>
-
-    <div class="operator-badge-col">
-      <div class="operator-badge">{{ operatorSymbol }}</div>
-    </div>
-
-    <div class="panel">
-      <label class="panel-label">VALUE 2</label>
-      <div class="input-card">
-        <input type="number" class="value-input" [(ngModel)]="value2" placeholder="0" />
-        <div class="card-divider"></div>
-        <select class="unit-select" [(ngModel)]="unit2">
-          <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
-        </select>
+      <div class="summary-body">
+        <div class="total-value">
+          <span class="equals">=</span>
+          {{ resultValue !== null ? (resultValue | number:'1.2-4') : '---' }}
+        </div>
+        <div class="total-unit">{{ resultUnit | titlecase }}</div>
       </div>
     </div>
   </div>
 
-  <div class="action-btn-row">
-    <button class="calc-btn" (click)="calculate()" [disabled]="isLoading">
-      <span *ngIf="!isLoading">Calculate</span>
+  <!-- Action Footer -->
+  <div class="action-footer">
+    <button class="btn-primary auth-submit" (click)="calculate()" [disabled]="isLoading">
+      <span *ngIf="!isLoading">Calculate Result</span>
       <span *ngIf="isLoading">Calculating...</span>
+      <span class="btn-icon">=</span>
     </button>
-  </div>
-
-  <div *ngIf="error" class="error-msg">⚠ {{ error }}</div>
-
-  <div class="result-card" *ngIf="resultValue !== null && !isLoading">
-    <div class="result-top">
-      <span class="result-label">RESULT</span>
-    </div>
-    <div class="result-bottom">
-      <div class="result-value">{{ resultValue }}</div>
-      <select class="result-unit-select" [(ngModel)]="resultUnit" (ngModelChange)="calculate()">
-        <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
-      </select>
-    </div>
+    <div *ngIf="error" class="error-msg fade-in">{{ error }}</div>
   </div>
 </div>

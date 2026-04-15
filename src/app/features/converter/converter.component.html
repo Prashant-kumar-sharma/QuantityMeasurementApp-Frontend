@@ -1,47 +1,61 @@
-<div class="converter-container">
+<div class="converter-wrapper">
+  <div class="converter-container fade-in">
+    <div class="conversion-row">
+      <!-- Source Magnitude -->
+      <div class="field-group">
+        <label for="fromValue">Magnitude</label>
+        <input 
+          id="fromValue"
+          type="number" 
+          [(ngModel)]="fromValue" 
+          placeholder="0.00" />
+      </div>
 
-  <div class="panel">
-    <label class="panel-label">FROM</label>
-    <div class="input-card">
-      <input
-        type="number"
-        class="value-input"
-        [(ngModel)]="fromValue"
-        placeholder="0" />
-      <div class="card-divider"></div>
-      <select class="unit-select" [(ngModel)]="fromUnit">
-        <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
-      </select>
+      <!-- Base Unit Selector -->
+      <div class="field-group">
+        <label for="fromUnit">Base Unit</label>
+        <select id="fromUnit" [(ngModel)]="fromUnit">
+          <option *ngFor="let u of currentUnits" [value]="u">
+            {{ u | titlecase }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Arrow Divider -->
+      <div class="separator">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </div>
+
+      <!-- Target Unit Selector -->
+      <div class="field-group">
+        <label for="toUnit">Target Unit</label>
+        <select id="toUnit" [(ngModel)]="toUnit">
+          <option *ngFor="let u of currentUnits" [value]="u">
+            {{ u | titlecase }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result-section">
+      <div class="result-box" [class.has-value]="toValue !== null">
+        <span class="result-label">Calculated Result</span>
+        <div class="result-value">
+          {{ toValue !== null ? (toValue | number:'1.2-4') : '---' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Button (Repositioned directly below result) -->
+    <div class="action-footer">
+      <button class="btn-primary" (click)="convert()" [disabled]="isConverting">
+        {{ isConverting ? 'Converting...' : 'Convert' }}
+      </button>
+      
+      <div *ngIf="conversionError" class="error-msg fade-in">
+        {{ conversionError }}
+      </div>
     </div>
   </div>
-
-  <div class="panel">
-    <label class="panel-label">TO</label>
-    <div class="input-card">
-      <input
-        type="number"
-        class="value-input"
-        readonly />
-      <div class="card-divider"></div>
-      <select class="unit-select" [(ngModel)]="toUnit">
-        <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
-      </select>
-    </div>
-  </div>
-
 </div>
-
-<div class="button-container">
-    <button class="convert-btn" (click)="convertFrom()">Convert</button>
-</div>
-
-<div *ngIf="toValue !== null && !conversionError" class="result-panel success">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon success">
-        <polyline points="20 6 9 17 4 12"></polyline>
-    </svg>
-    
-    <span class="result-text">
-        {{ fromValue }} {{ fromUnit | titlecase }} = <strong>{{ toValue }}</strong> {{ toUnit | titlecase }}
-    </span>
-</div>
-<div *ngIf="conversionError" class="error-msg">⚠ {{ conversionError }}</div>

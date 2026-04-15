@@ -1,9 +1,9 @@
-import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs';
 import { QuantityMeasurementService, QuantityInputDTO } from '../../core/services/quantity-measurement.service';
-import { HistoryService } from '../../core/services/history.service';
-import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-converter',
@@ -27,13 +27,11 @@ export class ConverterComponent implements OnChanges {
   toValue: number | null = null;
   toUnit: string = 'INCHES';
   conversionError: string | null = null;
-  isLoading: boolean = false;
+  isConverting = false;
 
   constructor(
-    private svc: QuantityMeasurementService, 
-    private cdr: ChangeDetectorRef, // Added for immediate UI update
-    private historyService: HistoryService,   // ✅ ADD
-    private authService: AuthService 
+    private svc: QuantityMeasurementService,
+    private toastService: ToastService
   ) {}
 
   get currentUnits(): string[] {
@@ -52,22 +50,27 @@ export class ConverterComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedType']) {
-      const availableUnits = this.currentUnits;
-      this.fromUnit = availableUnits[0];
-      this.toUnit = availableUnits[1] || availableUnits[0];
+      this.fromUnit = this.currentUnits[0];
+      this.toUnit = this.currentUnits[0];
       this.toValue = null;
       this.conversionError = null;
-      this.cdr.detectChanges();
     }
   }
 
-  convertFrom() {
-    if (this.fromValue === null) return;
-
+  convert() {
     this.conversionError = null;
-    this.isLoading = true;
-    this.toValue = null;
-    this.cdr.detectChanges(); // Show loading state immediately
+
+    if (this.fromValue === null || this.fromValue === undefined || Number.isNaN(this.fromValue)) {
+      this.toValue = null;
+      this.conversionError = 'Please enter a valid source value';
+      return;
+    }
+
+    if (!this.fromUnit || !this.toUnit) {
+      this.toValue = null;
+      this.conversionError = 'Please select both source and target units';
+      return;
+    }
 
     const type = this.getMeasurementType();
     const input: QuantityInputDTO = {
@@ -76,30 +79,34 @@ export class ConverterComponent implements OnChanges {
       targetQuantityDTO: { value: 0, unit: this.toUnit, measurementType: type }
     };
 
-    this.svc.convert(input).subscribe({
-      next: (res: any) => { 
-        this.toValue = res.resultValue !== undefined ? res.resultValue : res.value; 
-        this.isLoading = false;
+    this.isConverting = true;
 
-        // ✅ SAVE HISTORY HERE
-        if (this.authService.isAuthenticated()) {
-          this.historyService.saveHistory({
-            action: `Converted ${this.fromValue} ${this.fromUnit} to ${this.toUnit}`,
-            result: `${this.toValue}`
-          }).subscribe({
-            next: () => console.log('History saved'),
-            error: (err) => console.log('Error saving history', err)
-          });
+    this.svc.convert(input)
+      .pipe(finalize(() => {
+        // Ensure reset happens in next tick to avoid rapid state changes 
+        // that might not be caught by change detection in some scenarios
+        setTimeout(() => this.isConverting = false, 100);
+      }))
+      .subscribe({
+        next: (res) => {
+          if (res && res.resultValue !== undefined && res.resultValue !== null) {
+            this.toValue = res.resultValue;
+            this.conversionError = null;
+            // No success toast for routine conversions - result is visible in UI
+          } else {
+            this.toValue = null;
+            this.conversionError = 'Unexpected response format from server';
+            this.toastService.showError('Unexpected response format from server');
+          }
+        },
+        error: (err) => {
+          const errorMsg = err?.userMessage
+            || err?.error?.message
+            || (err?.status === 0 ? 'Connection error. Is API Gateway running?' : 'Conversion failed');
+          this.conversionError = errorMsg;
+          this.toastService.showError(errorMsg);
+          this.toValue = null;
         }
-
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.conversionError = err?.error?.message || 'Conversion failed';
-        this.toValue = null;
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
-    });
+      });
   }
 }

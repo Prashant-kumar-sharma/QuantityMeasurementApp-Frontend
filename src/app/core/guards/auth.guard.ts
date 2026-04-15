@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -10,5 +10,7 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.parseUrl('/login');
+  authService.setPostLoginRedirectUrl(state.url || '/history');
+
+  return router.parseUrl('/login?required=1');
 };

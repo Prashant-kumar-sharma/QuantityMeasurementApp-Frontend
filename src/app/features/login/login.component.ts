@@ -1,68 +1,112 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnInit {
-
   activeTab: 'login' | 'signup' = 'login';
 
-  // NEW STEP FLOW
-  step: 'login' | 'forgot' | 'reset' = 'login';
+  loginForm: FormGroup<{
+    email: FormControl<string>;
+    password: FormControl<string>;
+  }>;
 
-  email = '';
-  password = '';
-  fullName = '';
-  mobileNo = '';
-
-  // OTP FLOW
-  otp = '';
-  newPassword = '';
+  signupForm: FormGroup<{
+    fullName: FormControl<string>;
+    email: FormControl<string>;
+    mobileNo: FormControl<string>;
+    password: FormControl<string>;
+    confirmPassword: FormControl<string>;
+  }>;
 
   showPassword = false;
-
   errorMessage: string | null = null;
+  infoMessage: string | null = null;
   successMessage: string | null = null;
+  backendErrors: any = {};
+  isLoading = false;
 
   constructor(
-    private authService: AuthService,
+    private fb: FormBuilder,
+    private authService: AuthService, 
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private toastService: ToastService
+  ) {
+    this.loginForm = this.fb.nonNullable.group({
+      email: ['', []],
+      password: ['', []]
+    });
+
+    this.signupForm = this.fb.nonNullable.group({
+      fullName: ['', []],
+      email: ['', []],
+      mobileNo: ['', []],
+      password: ['', []],
+      confirmPassword: ['', []]
+    });
+
+    // Clear backend errors as user types
+    this.setupErrorClearing();
+  }
+
+  private setupErrorClearing() {
+    this.loginForm.valueChanges.subscribe(() => {
+      this.backendErrors = {};
+    });
+
+    this.signupForm.get('fullName')?.valueChanges.subscribe(() => {
+      delete this.backendErrors.firstName;
+      delete this.backendErrors.lastName;
+    });
+    this.signupForm.get('email')?.valueChanges.subscribe(() => delete this.backendErrors.email);
+    this.signupForm.get('mobileNo')?.valueChanges.subscribe(() => delete this.backendErrors.mobileNo);
+    this.signupForm.get('password')?.valueChanges.subscribe(() => delete this.backendErrors.password);
+    this.signupForm.get('confirmPassword')?.valueChanges.subscribe(() => delete this.backendErrors.confirmPassword);
+  }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
+      this.infoMessage = params['required'] ? 'Login required to access history.' : null;
 
       if (params['token']) {
-        setTimeout(() => {
-          this.showToast('success', 'Google Login Successful! Redirecting...');
-          this.authService.login(params['token']);
-          this.router.navigate(['/dashboard']);
-        });
-      } 
-
-      else if (params['error']) {
-        setTimeout(() => {
-          this.showToast('error', 'Google Sign-in failed. Please try again.');
-        });
+        this.authService.loginWithToken(params['token']);
+        const redirectUrl = this.authService.getAndClearPostLoginRedirectUrl() ?? '/dashboard';
+        this.router.navigateByUrl(redirectUrl);
+        return;
       }
 
+      if (params['error']) {
+        this.errorMessage = params['message']
+          ? decodeURIComponent(params['message'])
+          : 'Google authentication failed. Please try again.';
+        return;
+      }
+
+      if (this.authService.isAuthenticated()) {
+        const redirectUrl = this.authService.getAndClearPostLoginRedirectUrl() ?? '/dashboard';
+        this.router.navigateByUrl(redirectUrl);
+      }
     });
   }
 
   toggleTab(tab: 'login' | 'signup') {
     this.activeTab = tab;
     this.errorMessage = null;
+    this.infoMessage = null;
     this.successMessage = null;
+    this.backendErrors = {};
+    this.isLoading = false;
   }
 
   togglePasswordVisibility() {
@@ -70,203 +114,125 @@ export class LoginComponent implements OnInit {
   }
 
   loginWithGoogle() {
+    const queryRedirect = this.route.snapshot.queryParamMap.get('returnUrl');
+    const fallbackRedirect = this.route.snapshot.queryParamMap.get('required') ? '/history' : '/dashboard';
+    this.authService.setPostLoginRedirectUrl(queryRedirect ?? fallbackRedirect);
+
     window.open(this.authService.getGoogleAuthUrl(), '_self');
   }
 
-  // ================= TOASTER =================
-  private showToast(type: 'success' | 'error', message: string) {
-
-    if (type === 'success') {
-      this.successMessage = message;
-      this.errorMessage = null;
-    } else {
-      this.errorMessage = message;
-      this.successMessage = null;
-    }
-
-    this.cdr.detectChanges();
-
-    setTimeout(() => {
-      this.successMessage = null;
-      this.errorMessage = null;
-      this.cdr.detectChanges();
-    }, 3000);
-  }
-
-  // ================= VALIDATION =================
-
-  private isValidEmail(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  private isValidPassword(password: string): boolean {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(password);
-  }
-
-  private isValidMobile(mobile: string): boolean {
-    return /^[6-9]\d{9}$/.test(mobile);
-  }
-
-  // ================= FORGOT PASSWORD =================
-
-  goToForgotPassword() {
-    this.step = 'forgot';
-  }
-
-  sendOtp() {
-
-    if (!this.email || !this.isValidEmail(this.email)) {
-      this.showToast('error', 'Enter a valid email');
+  autoCapitalizeName(): void {
+    const currentName = this.signupForm.get('fullName')?.value?.trim();
+    if (!currentName) {
       return;
     }
 
-    this.authService.forgotPassword(this.email).subscribe({
-      next: () => {
-        this.showToast('success', 'OTP sent to your email');
-        this.step = 'reset';
-      },
-      error: () => {
-        this.showToast('error', 'Failed to send OTP');
-      }
+    const nameParts = currentName.split(/\s+/);
+    const formattedParts = nameParts.map(part => {
+      if (part.length === 0) return '';
+      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
     });
+    this.signupForm.patchValue({ fullName: formattedParts.join(' ') });
   }
 
-  resetPassword() {
-
-    if (!this.otp || !this.newPassword) {
-      this.showToast('error', 'Enter OTP and new password');
-      return;
+  private extractErrorMessage(err: unknown, fallbackMessage: string): string {
+    const httpErr = err as HttpErrorResponse;
+    const body = httpErr?.error;
+    
+    if (body && typeof body === 'object') {
+      if (body.message) return body.message;
+      if (body.error) return body.error;
     }
-
-    if (!this.isValidPassword(this.newPassword)) {
-      this.showToast('error',
-        'Password must be 8+ chars with uppercase, lowercase, number & special char'
-      );
-      return;
-    }
-
-    this.authService.resetPassword(this.email, {
-      otp: this.otp,
-      newPassword: this.newPassword
-    }).subscribe({
-      next: () => {
-        this.showToast('success', 'Password updated successfully');
-        this.step = 'login';
-      },
-      error: () => {
-        this.showToast('error', 'Invalid or expired OTP');
-      }
-    });
+    
+    return fallbackMessage;
   }
-
-  // ================= MAIN SUBMIT =================
 
   onSubmit() {
-
     this.errorMessage = null;
     this.successMessage = null;
+    this.backendErrors = {};
 
-    // ===== LOGIN =====
     if (this.activeTab === 'login') {
-
-      if (!this.email || !this.password) {
-        this.showToast('error', 'Please enter both Email and Password');
-        return;
-      }
-
-      if (!this.isValidEmail(this.email)) {
-        this.showToast('error', 'Please enter a valid email address');
-        return;
-      }
-
-      const payload = { email: this.email, password: this.password };
-
+      this.isLoading = true;
+      const payload = this.loginForm.getRawValue();
       this.authService.loginWithCredentials(payload).subscribe({
-
-        next: (res: any) => {
-          if (res && (res.accessToken || res.token)) {
-
-            this.showToast('success', 'Login Successful! Redirecting...');
-            this.authService.login(res.accessToken || res.token);
-
-            setTimeout(() => {
-              this.router.navigate(['/dashboard']);
-            }, 1500);
-
-          } else {
-            this.showToast('error', 'Unexpected response from server');
+        next: (res) => {
+          if (!res?.accessToken) {
+            this.errorMessage = 'Login succeeded but no access token was returned by server.';
+            this.toastService.showError('Login succeeded but no access token was returned by server.');
+            this.isLoading = false;
+            return;
           }
+          this.authService.loginFromResponse(res);
+          this.toastService.showSuccess('Login successful');
+          this.isLoading = false;
+          const redirectUrl = this.authService.getAndClearPostLoginRedirectUrl() ?? '/dashboard';
+          this.router.navigateByUrl(redirectUrl);
         },
-
         error: (err) => {
-
-          let message = 'Login failed';
-
-          if (err.status === 400) message = 'Invalid email or password';
-          else if (err.status === 401) message = 'Unauthorized';
-          else if (err.status === 0) message = 'Server not reachable';
-
-          this.showToast('error', message);
+          const errorMsg = this.extractErrorMessage(err, 'Login failed. Please try again.');
+          this.errorMessage = errorMsg;
+          this.toastService.showError(errorMsg);
+          this.isLoading = false;
         }
       });
-
       return;
     }
 
-    // ===== SIGNUP =====
-    if (this.activeTab === 'signup') {
+    // Sign Up Submission
+    const formValue = this.signupForm.getRawValue();
+    const nameParts = (formValue.fullName ?? '').trim().split(/\s+/);
+    const firstName = nameParts[0] ? nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1).toLowerCase() : '';
 
-      if (!this.fullName || !this.email || !this.password || !this.mobileNo) {
-        this.showToast('error', 'Please fill all fields');
-        return;
+    let lastName = 'User';
+    if (nameParts.length > 1) {
+      const cleanedLast = nameParts[nameParts.length - 1].replace(/[^a-zA-Z]/g, '');
+      if (cleanedLast.length > 0) {
+        lastName = cleanedLast.charAt(0).toUpperCase() + cleanedLast.slice(1).toLowerCase();
       }
-
-      if (!this.isValidEmail(this.email)) {
-        this.showToast('error', 'Invalid email');
-        return;
-      }
-
-      if (!this.isValidPassword(this.password)) {
-        this.showToast('error', 'Weak password');
-        return;
-      }
-
-      if (!this.isValidMobile(this.mobileNo)) {
-        this.showToast('error', 'Invalid mobile number');
-        return;
-      }
-
-      const nameParts = this.fullName.trim().split(/\s+/);
-
-      const payload = {
-        firstName: nameParts[0],
-        lastName: nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'User',
-        email: this.email,
-        password: this.password,
-        mobileNo: this.mobileNo
-      };
-
-      this.authService.register(payload).subscribe({
-        next: (res: any) => {
-
-          // Show success toast
-          this.showToast('success', 'Registration Successful! Redirecting...');
-
-          // If backend returns token → login user
-          if (res && (res.accessToken || res.token)) {
-            this.authService.login(res.accessToken || res.token);
-          }
-
-          // Redirect after short delay (for UX)
-          setTimeout(() => {
-            this.router.navigate(['/dashboard']);
-          }, 1500);
-        },
-
-        error: () => {
-          this.showToast('error', 'Registration failed');
-        }
-      });
     }
+
+    this.isLoading = true;
+    const payload = {
+      firstName,
+      lastName,
+      email: formValue.email ?? '',
+      password: formValue.password ?? '',
+      mobileNo: formValue.mobileNo ?? ''
+    };
+    
+    this.authService.register(payload).subscribe({
+      next: (res) => {
+        this.successMessage = 'Registration successful! You can now log in.';
+        this.toastService.showSuccess('Account created successfully');
+        this.isLoading = false;
+        this.toggleTab('login');
+        this.loginForm.patchValue({ email: payload.email, password: '' });
+        this.signupForm.reset();
+      },
+      error: (err) => {
+        let errorBody = err.error;
+        
+        // If responseType is 'text', error might be a JSON string
+        if (typeof errorBody === 'string') {
+          try {
+            errorBody = JSON.parse(errorBody);
+          } catch {
+            // Not a JSON string; use fallback
+          }
+        }
+
+        if (errorBody && errorBody.errors) {
+          this.backendErrors = errorBody.errors;
+          this.errorMessage = 'Please correct the errors below.';
+          this.toastService.showError('Please correct the errors below.');
+        } else {
+          const errorMsg = this.extractErrorMessage(err, 'Registration failed.');
+          this.errorMessage = errorMsg;
+          this.toastService.showError(errorMsg);
+        }
+        this.isLoading = false;
+      }
+    });
   }
 }

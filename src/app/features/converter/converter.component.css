@@ -1,149 +1,152 @@
-/* --- Existing Styles --- */
-.converter-container {
+.converter-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
   display: flex;
-  gap: 20px;
-  width: 100%;
+  justify-content: center;
 }
 
-.panel {
+.converter-container {
+  width: 100%;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.conversion-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  margin-bottom: 24px; /* Space to result */
+}
+
+.field-group {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
-.panel-label {
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: #111;
-  letter-spacing: 0.8px;
-}
-
-.input-card {
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-}
-
-.value-input {
-  width: 100%;
-  padding: 16px 18px;
-  font-size: 30px;
-  font-weight: 800;
-  color: #111;
-  border: none;
-  background: transparent;
-  outline: none;
-  border-radius: 6px 6px 0 0;
-}
-
-.value-input:read-only {
-  color: #444;
-  background: #f9f9f9;
-}
-
-.card-divider {
-  width: 100%;
-  height: 1px;
-  background-color: #f0f0f0;
-}
-
-.unit-select {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 14px;
+.field-group label {
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #555;
-  border: none;
-  background: transparent;
-  appearance: none;
-  outline: none;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23bbb' stroke-width='3'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  background-size: 11px;
+  color: var(--text-muted);
 }
 
-/* --- Added/Updated Status & Button Styles --- */
+.field-group input, 
+.field-group select {
+  height: 46px;
+  background: #020617;
+  border: 1px solid #1f2937;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 0 1rem;
+  transition: all 0.2s;
+}
 
-.button-container {
+.field-group input:focus,
+.field-group select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+  outline: none;
+}
+
+.separator {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+/* Result Section */
+.result-section {
+  background: #020617;
+  border: 1px dashed #1f2937;
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 20px; /* Space to button */
   display: flex;
   justify-content: center;
-  margin: 14px 0 4px;
 }
 
-.convert-btn {
-  background: #4f6ef7;
-  color: #fff;
-  border: none;
-  padding: 13px 48px;
-  border-radius: 6px;
-  font-size: 15px;
+.result-box {
+  text-align: center;
+}
+
+.result-label {
+  font-size: 0.75rem;
   font-weight: 700;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(79,110,247,0.3);
-  transition: all 0.15s;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 0.75rem;
 }
 
-.convert-btn:hover {
-  background-color: #4a4cb2;
+.result-value {
+  font-size: 1.75rem; /* 28px approx */
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.result-box.has-value .result-value {
+  color: #3b82f6;
+}
+
+/* Footer Action */
+.action-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.action-footer .btn-primary {
+  height: 48px;
+  width: 240px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-footer .btn-primary:hover:not(:disabled) {
+  background: #2563eb;
   transform: translateY(-1px);
 }
 
-.convert-btn:active {
-  transform: translateY(0);
+.action-footer .btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-/* Success Result Panel (Matches Comparison UI) */
-.result-panel {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border: 3px solid #eee;
-  border-left: 5px solid #2ecc71; /* Green success bar */
-  border-radius: 8px;
-  padding: 16px 20px;
-  margin-top: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-}
-
-.status-icon {
-  margin-right: 15px;
-  flex-shrink: 0;
-}
-
-.status-icon.success {
-  color: #2ecc71;
-}
-
-.result-text {
-  font-size: 15px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.result-text strong {
-  font-size: 18px;
-  color: #111;
-  margin: 0 4px;
-}
-
-/* Error Message Panel */
 .error-msg {
-  background: #fff2f3;
-  color: #c0392b;
-  border: 1px solid #fadbd8;
-  border-left: 5px solid #c0392b;
-  border-radius: 4px;
-  padding: 16px 20px;
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
+  font-size: 0.875rem;
+  color: var(--error);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .conversion-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .separator {
+    transform: rotate(90deg);
+    height: 24px;
+  }
+  
+  .action-footer .btn-primary {
+    width: 100%;
+  }
 }

@@ -1,29 +1,77 @@
-<div class="history-container">
-
-  <!-- Header -->
+<div class="history-container fade-in">
   <div class="history-header">
-    <h2>Your History</h2>
-    <button class="back-btn" (click)="goBack()">⬅ Back</button>
-  </div>
+    <div class="header-content">
+      <h2 class="title">Activity Archive</h2>
+      <p class="subtitle">Secure history of <span>{{ selectedType | titlecase }}</span> operations</p>
+    </div>
+    
+    <div class="header-stats" *ngIf="historyList.length > 0">
+      <div class="stat-badge">
+        <span class="count">{{ historyList.length }}</span>
+        <span class="label">Total Records</span>
+      </div>
 
-  <!-- Empty State -->
-  <div *ngIf="historyList.length === 0" class="empty">
-    No history found
-  </div>
-
-  <!-- History List -->
-  <div class="history-list">
-    <div 
-        class="history-card" 
-        *ngFor="let item of historyList; let i = index"
-        [ngStyle]="{
-            'background-color': getRandomColor(i).light,
-            'border-left': '6px solid ' + getRandomColor(i).dark
-        }"
-        >
-        <div class="action">{{ item.action }}</div>
-        <div class="result">Result: {{ item.result }}</div>
+      <button class="btn-clear-history" (click)="clearHistory()" [disabled]="isClearing || isLoading">
+        {{ isClearing ? 'Clearing...' : 'Clear History' }}
+      </button>
     </div>
   </div>
 
+  <!-- States -->
+  <div class="states-wrapper">
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="state-view">
+      <div class="spinner"></div>
+      <p>Synchronizing archive data...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error" class="state-view error-card">
+      <div class="icon error">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h3>Sync Interrupted</h3>
+      <p>{{ error }}</p>
+      <button class="btn-primary" (click)="loadHistory()">Retry Sync</button>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!isLoading && !error && historyList.length === 0" class="state-view empty-card">
+      <div class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <h3>Empty Archive</h3>
+      <p>No measurement records found for {{ selectedType }} yet.</p>
+    </div>
+  </div>
+
+  <!-- Records List -->
+  <div *ngIf="!isLoading && !error && historyList.length > 0" class="history-grid">
+    <div *ngFor="let item of historyList" class="history-card card fade-in">
+      <div class="card-side">
+        <div class="type-indicator" [class.convert]="item.operation === 'CONVERT'"></div>
+      </div>
+      
+      <div class="card-main">
+        <div class="meta-row">
+          <span class="operation-pill">{{ formatOperationType(item.operation) }}</span>
+          <span class="timestamp">{{ item.timestamp | date:'short' }}</span>
+        </div>
+
+        <div class="content-row">
+          <p class="description">{{ formatOperation(item) }}</p>
+          <div class="result-display">
+            <span class="res-label">Result Magnitude</span>
+            <span class="res-value">{{ item.resultString || (item.resultValue | number:'1.2-4') }} {{ item.resultUnit | titlecase }}</span>
+          </div>
+        </div>
+
+        <div class="footer-row">
+          <div class="status-indicator" [class.success]="!item.error" [class.failure]="item.error">
+            {{ item.error ? 'Failure' : 'Success' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

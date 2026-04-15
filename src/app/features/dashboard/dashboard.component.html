@@ -1,99 +1,63 @@
-<div class="dashboard-wrapper">
-  <div class="content-container">
-    <!-- ADMIN VIEW -->
-    <div class="section admin-section" *ngIf="isAdmin" style="margin-bottom: 30px;">
-      <h3 class="section-title">ADMINISTRATOR VIEW</h3>
-      <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;">
-        <h2>System Data & Users</h2>
-        <p>You have full access to system-wide data.</p>
-        <p style="color: #666; font-size: 0.9em; margin-top: 10px;">Refer to /api/admin endpoints to manage users and view full operational history.</p>
+<div class="universal-center fade-in">
+  <div class="header-section">
+    <h2 class="title">Universal Center</h2>
+    <p class="subtitle">Select your dimension and define the operation</p>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- Section 1: Select Dimension -->
+    <section class="dimension-section">
+      <h3>Select Dimension</h3>
+      <div class="dimension-grid">
+        <button 
+          *ngFor="let type of ['length', 'weight', 'temperature', 'volume']" 
+          class="dimension-card"
+          [class.active]="selectedType === type"
+          (click)="selectType(type)">
+          <div class="dimension-icon" [ngSwitch]="type">
+            <svg *ngSwitchCase="'length'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23.1 3.1a2 2 0 0 0-2.8 0L3.1 20.3a2 2 0 0 0 0 2.8c.4.4 1 .6 1.4.6s1-.2 1.4-.6L23.1 5.9a2 2 0 0 0 0-2.8ZM7 17l2 2M10 14l2 2M13 11l2 2M16 8l2 2"/></svg>
+            <svg *ngSwitchCase="'weight'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0-4.4-3.6-8-8-8s-8 3.6-8 8c0 3 1.7 5.7 4.3 7 1.3.7 2.3 1.8 2.3 3.2v.8h2.8v-.8c0-1.4 1-2.5 2.3-3.2 2.6-1.3 4.3-4 4.3-7Zm-8 2c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Z"/></svg>
+            <svg *ngSwitchCase="'temperature'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.5a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
+            <svg *ngSwitchCase="'volume'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-4-9 4 9 4 9-4ZM21 16l-9-4-9 4 9 4 9-4Z"/><path d="M3 8v8"/><path d="M12 12v8"/><path d="M21 8v8"/></svg>
+          </div>
+          <span>{{ type | titlecase }}</span>
+        </button>
       </div>
-    </div>
+    </section>
 
-    <!-- CHOOSE TYPE (USER ONLY) -->
-    <div class="section" *ngIf="!isAdmin">
-      <h3 class="section-title">CHOOSE TYPE</h3>
-      <div class="type-cards">
-
-        <div class="type-card" [class.active]="selectedType==='length'" (click)="selectType('length')">
-          <div class="icon-box">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="16" width="36" height="16" rx="3" fill="#f5a623" opacity="0.15"/>
-              <path d="M8 24h32M12 18v4M18 18v4M24 18v4M30 18v4M36 18v4" stroke="#f5a623" stroke-width="2.5" stroke-linecap="round"/>
-              <rect x="6" y="16" width="36" height="16" rx="3" stroke="#f5a623" stroke-width="2.5"/>
-            </svg>
-          </div>
-          <span>Length</span>
-        </div>
-
-        <div class="type-card" [class.active]="selectedType==='weight'" (click)="selectType('weight')">
-          <div class="icon-box">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="24" cy="16" r="7" fill="#f0a500" opacity="0.15"/>
-              <circle cx="24" cy="16" r="7" stroke="#f0a500" stroke-width="2.5"/>
-              <path d="M10 38h28L34 22H14L10 38z" fill="#f0a500" opacity="0.15"/>
-              <path d="M10 38h28L34 22H14L10 38z" stroke="#f0a500" stroke-width="2.5" stroke-linejoin="round"/>
-              <line x1="24" y1="23" x2="24" y2="38" stroke="#f0a500" stroke-width="2" stroke-dasharray="2 3"/>
-            </svg>
-          </div>
-          <span>Weight</span>
-        </div>
-
-        <div class="type-card" [class.active]="selectedType==='temperature'" (click)="selectType('temperature')">
-          <div class="icon-box">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M24 8a5 5 0 0 0-5 5v14.5A9 9 0 1 0 29 27.5V13a5 5 0 0 0-5-5z" fill="#e74c3c" opacity="0.15"/>
-              <path d="M24 8a5 5 0 0 0-5 5v14.5A9 9 0 1 0 29 27.5V13a5 5 0 0 0-5-5z" stroke="#e74c3c" stroke-width="2.5"/>
-              <circle cx="24" cy="36" r="5" fill="#e74c3c" opacity="0.4"/>
-              <line x1="19" y1="18" x2="22" y2="18" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-              <line x1="19" y1="23" x2="22" y2="23" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <span>Temperature</span>
-        </div>
-
-        <div class="type-card" [class.active]="selectedType==='volume'" (click)="selectType('volume')">
-          <div class="icon-box">
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14 10h20l3 28H11L14 10z" fill="#3498db" opacity="0.15"/>
-              <path d="M14 10h20l3 28H11L14 10z" stroke="#3498db" stroke-width="2.5" stroke-linejoin="round"/>
-              <path d="M12 20h24M13 28h22" stroke="#3498db" stroke-width="1.5" opacity="0.6"/>
-              <path d="M17 10V8M24 10V8M31 10V8" stroke="#3498db" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <span>Volume</span>
-        </div>
-
+    <!-- Section 2: Choose Operation -->
+    <section class="operation-section">
+      <h3>Choose Operation</h3>
+      <div class="operation-list">
+        <button 
+          *ngFor="let act of [
+            {id: 'conversion', label: 'Convert'},
+            {id: 'comparison', label: 'Compare'},
+            {id: 'arithmetic', label: 'Calculate'},
+            {id: 'history', label: 'History'}
+          ]"
+          class="operation-btn"
+          [class.active]="selectedAction === act.id"
+          [class.disabled]="act.id === 'history' && !(authService.isAuthenticated$ | async)"
+          (click)="selectAction(act.id)">
+          {{ act.label }}
+          <span *ngIf="act.id === 'history' && !(authService.isAuthenticated$ | async)" class="login-hint">(Login required)</span>
+        </button>
       </div>
-    </div>
+    </section>
 
-    <!-- CHOOSE ACTION (USER ONLY) -->
-    <div class="section" *ngIf="!isAdmin">
-      <h3 class="section-title">CHOOSE ACTION</h3>
-      <div class="action-pills">
-        <div class="action-pill" [class.active]="selectedAction==='comparison'" (click)="selectAction('comparison')">Comparison</div>
-        <div class="action-pill" [class.active]="selectedAction==='conversion'" (click)="selectAction('conversion')">Conversion</div>
-        <div class="action-pill" [class.active]="selectedAction==='arithmetic'" (click)="selectAction('arithmetic')">Arithmetic</div>
+    <!-- Active Component Area -->
+    <section class="operational-view card fade-in" *ngIf="selectedAction && selectedType">
+      <div class="view-header">
+        <h3>{{ selectedAction === 'conversion' ? (selectedType | titlecase) + ' Conversion' : (selectedAction | titlecase) }}</h3>
+        <p>Perform precise {{ selectedAction }} operations with {{ selectedType }} units.</p>
       </div>
-    </div>
 
-    <!-- CONTENT AREA (USER ONLY) -->
-    <div class="action-content" *ngIf="!isAdmin">
-      <app-converter
-        *ngIf="selectedAction === 'conversion'"
-        [selectedType]="selectedType">
-      </app-converter>
-
-      <app-calculator
-        *ngIf="selectedAction === 'comparison'"
-        [selectedType]="selectedType">
-      </app-calculator>
-
-      <app-arithmetic
-        *ngIf="selectedAction === 'arithmetic'"
-        [selectedType]="selectedType">
-      </app-arithmetic>
-    </div>
-
+      <div class="component-content">
+        <app-converter *ngIf="selectedAction === 'conversion'" [selectedType]="selectedType"></app-converter>
+        <app-calculator *ngIf="selectedAction === 'comparison'" [selectedType]="selectedType"></app-calculator>
+        <app-arithmetic *ngIf="selectedAction === 'arithmetic'" [selectedType]="selectedType"></app-arithmetic>
+      </div>
+    </section>
   </div>
 </div>

@@ -3,11 +3,11 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": "89c8094c-41ac-4b92-a422-ef3f69f112f7"
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
-    "temp-ui": {
+    "quantity-ui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -55,15 +55,12 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
-          "options": {
-            "proxyConfig": "proxy.conf.json"
-          },
           "configurations": {
             "production": {
-              "buildTarget": "temp-ui:build:production"
+              "buildTarget": "quantity-ui:build:production"
             },
             "development": {
-              "buildTarget": "temp-ui:build:development"
+              "buildTarget": "quantity-ui:build:development"
             }
           },
           "defaultConfiguration": "development"

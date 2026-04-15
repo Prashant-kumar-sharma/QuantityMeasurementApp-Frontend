@@ -1,54 +1,38 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
 import { ConverterComponent } from '../converter/converter.component';
 import { CalculatorComponent } from '../calculator/calculator.component';
 import { ArithmeticComponent } from '../arithmetic/arithmetic.component';
 import { AuthService } from '../../core/services/auth.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    ConverterComponent,
-    CalculatorComponent,
-    ArithmeticComponent
-  ],
+  imports: [CommonModule, ConverterComponent, CalculatorComponent, ArithmeticComponent],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
-
   selectedType: string = 'length';
   selectedAction: string = 'conversion';
 
-  // NEW: use variable instead of calling service in HTML
-  isAdmin: boolean = false;
+  constructor(public authService: AuthService, private router: Router) {}
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {
-    // initialize once
-    this.isAdmin = this.authService.isAdmin();
-  }
-
-  // navigation logic
-  goToHistory() {
-    if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/login']);
-    } else {
-      this.router.navigate(['/history']);
-    }
-  }
-
-  // UI handlers
   selectType(typeId: string) {
     this.selectedType = typeId;
   }
 
   selectAction(actionId: string) {
+    if (actionId === 'history') {
+      if (this.authService.isAuthenticated()) {
+        this.router.navigate(['/history']);
+      }
+      // If not authenticated, do nothing (button is visually disabled)
+      return;
+    }
+
     this.selectedAction = actionId;
   }
 }

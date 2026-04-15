@@ -1,41 +1,69 @@
-<div class="compare-container">
+<div class="comparison-container fade-in">
+  <div class="comparison-grid">
+    <!-- Magnitude A -->
+    <div class="magnitude-card">
+      <div class="card-header">
+        <span class="label">Magnitude A</span>
+        <h4>First Quantity</h4>
+      </div>
+      <div class="card-body">
+        <div class="field-group">
+          <input type="number" [(ngModel)]="value1" placeholder="1.00" />
+        </div>
+        <div class="field-group">
+          <select [(ngModel)]="unit1">
+            <option *ngFor="let u of currentUnits" [value]="u">{{u | titlecase}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-  <!-- FROM panel -->
-  <div class="panel">
-    <label class="panel-label">FROM</label>
-    <div class="input-card">
-      <input type="number" class="value-input" [(ngModel)]="value1" placeholder="0" />
-      <div class="card-divider"></div>
-      <select class="unit-select" [(ngModel)]="unit1">
-        <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
-      </select>
+    <!-- Center Divider -->
+    <div class="logic-center">
+      <div class="equality-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+    </div>
+
+    <!-- Magnitude B -->
+    <div class="magnitude-card">
+      <div class="card-header">
+        <span class="label">Magnitude B</span>
+        <h4>Second Quantity</h4>
+      </div>
+      <div class="card-body">
+        <div class="field-group">
+          <input type="number" [(ngModel)]="value2" placeholder="1.00" />
+        </div>
+        <div class="field-group">
+          <select [(ngModel)]="unit2">
+            <option *ngFor="let u of currentUnits" [value]="u">{{u | titlecase}}</option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- TO panel -->
-  <div class="panel">
-    <label class="panel-label">TO</label>
-    <div class="input-card">
-      <input type="number" class="value-input" [(ngModel)]="value2" placeholder="0" />
-      <div class="card-divider"></div>
-      <select class="unit-select" [(ngModel)]="unit2">
-        <option *ngFor="let u of currentUnits" [value]="u">{{ u | titlecase }}</option>
-      </select>
+  <!-- Result area -->
+  <div class="result-area" *ngIf="compareResult !== null">
+    <div class="result-card" [class.success]="compareResult">
+      <div class="result-icon">
+        <svg *ngIf="compareResult" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg *ngIf="!compareResult" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+      <div class="result-text">
+        <span>Quantities are</span>
+        <strong>{{ compareResult ? 'Identical' : 'Different' }}</strong>
+      </div>
     </div>
   </div>
 
-</div>
-
-<div class="action-btn-row">
-  <button class="calc-btn" (click)="compare()" [disabled]="!value1 || !value2">Compare</button>
-</div>
-
-
-<!-- Error -->
-<div *ngIf="error" class="error-msg">⚠ {{ error }}</div>
-
-<!-- Result -->
-<div *ngIf="compareResult !== null" class="compare-result-card" [class.equal]="compareResult" [class.notequal]="!compareResult">
-  <span class="compare-icon">{{ compareResult ? '✓' : '✕' }}</span>
-  <span class="compare-text">The two quantities are <strong>{{ compareResult ? 'EQUAL' : 'NOT EQUAL' }}</strong></span>
+  <!-- Action Footer -->
+  <div class="action-footer">
+    <button class="btn-primary" (click)="compare()" [disabled]="isComparing">
+      <span *ngIf="!isComparing">Compare Now</span>
+      <span *ngIf="isComparing">Processing...</span>
+      <span class="btn-icon">⇄</span>
+    </button>
+  </div>
 </div>
