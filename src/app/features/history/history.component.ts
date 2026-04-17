@@ -55,12 +55,26 @@ export class HistoryComponent implements OnChanges, OnInit, OnDestroy {
     return typeMap[this.selectedType] || 'LengthUnit';
   }
 
+  selectType(type: string) {
+    if (this.selectedType !== type) {
+      this.selectedType = type;
+      this.loadHistory();
+    }
+  }
+
   loadHistory() {
     this.isLoading = true;
     this.error = null;
-    const typeParam = this.getMeasurementTypeParam();
     
-    this.svc.getHistoryByType(typeParam).pipe(
+    let request$;
+    if (this.selectedType === 'errors') {
+      request$ = this.svc.getErroredHistory();
+    } else {
+      const typeParam = this.getMeasurementTypeParam();
+      request$ = this.svc.getHistoryByType(typeParam);
+    }
+    
+    request$.pipe(
       finalize(() => {
         setTimeout(() => this.isLoading = false, 200);
       })
@@ -78,8 +92,8 @@ export class HistoryComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   clearHistory() {
-    if (this.historyList.length === 0 || this.isClearing) {
-      return;
+    if (this.historyList.length === 0 || this.isClearing || this.selectedType === 'errors') {
+      return; // Cannot clear errors from this UI yet
     }
 
     const shouldClear = window.confirm(`Clear all ${this.selectedType} history records?`);

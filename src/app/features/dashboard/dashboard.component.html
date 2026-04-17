@@ -1,7 +1,7 @@
 <div class="universal-center fade-in">
   <div class="header-section">
-    <h2 class="title">Universal Center</h2>
-    <p class="subtitle">Select your dimension and define the operation</p>
+    <h2 class="title">Nexus Measurement Hub</h2>
+    <p class="subtitle">Choose your dimension and initiate operation</p>
   </div>
 
   <div class="content-wrapper">
@@ -38,10 +38,11 @@
           ]"
           class="operation-btn"
           [class.active]="selectedAction === act.id"
-          [class.disabled]="act.id === 'history' && !(authService.isAuthenticated$ | async)"
+          [class.disabled]="(act.id === 'history' && !(authService.isAuthenticated$ | async)) || (act.id === 'arithmetic' && selectedType === 'temperature')"
           (click)="selectAction(act.id)">
           {{ act.label }}
           <span *ngIf="act.id === 'history' && !(authService.isAuthenticated$ | async)" class="login-hint">(Login required)</span>
+          <span *ngIf="act.id === 'arithmetic' && selectedType === 'temperature'" class="login-hint">(N/A)</span>
         </button>
       </div>
     </section>
@@ -57,6 +58,26 @@
         <app-converter *ngIf="selectedAction === 'conversion'" [selectedType]="selectedType"></app-converter>
         <app-calculator *ngIf="selectedAction === 'comparison'" [selectedType]="selectedType"></app-calculator>
         <app-arithmetic *ngIf="selectedAction === 'arithmetic'" [selectedType]="selectedType"></app-arithmetic>
+      </div>
+    </section>
+
+    <!-- Recent Calculations Section -->
+    <section class="recent-calculations-section fade-in" *ngIf="(authService.isAuthenticated$ | async) && recentCalculations.length > 0">
+      <h3>Recent Calculations</h3>
+      <div class="recent-list">
+        <div *ngFor="let item of recentCalculations" class="recent-item">
+          <div class="recent-meta">
+            <span class="recent-operation">{{ formatOperationType(item.operation) }}</span>
+            <span class="recent-time" *ngIf="item.timestamp">{{ item.timestamp | date:'shortTime' }}</span>
+          </div>
+          <div class="recent-content">
+            <p>{{ formatOperation(item) }}</p>
+            <div class="recent-result">
+              <strong>{{ item.resultString || (item.resultValue | number:'1.2-4') }}</strong>
+              <span class="recent-unit">{{ item.resultUnit | titlecase }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </div>

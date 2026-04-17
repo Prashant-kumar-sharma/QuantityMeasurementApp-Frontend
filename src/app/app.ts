@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService, AuthUser } from './core/services/auth.service';
@@ -20,6 +20,27 @@ export class App {
   
   // Track image loading state per user
   avatarLoaded = true;
+
+  // Navbar scroll tracking
+  isNavbarVisible = true;
+  lastScrollTop = 0;
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    
+    if (currentScroll <= 0) {
+      this.isNavbarVisible = true;
+    } else if (currentScroll > this.lastScrollTop) {
+      // Scrolling down
+      this.isNavbarVisible = false;
+    } else {
+      // Scrolling up
+      this.isNavbarVisible = true;
+    }
+
+    this.lastScrollTop = currentScroll;
+  }
 
   constructor(private authService: AuthService, private router: Router, private toastService: ToastService) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;

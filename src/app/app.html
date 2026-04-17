@@ -1,7 +1,7 @@
 <div class="app-shell">
   <!-- Clean Background -->
 
-  <nav class="main-nav">
+  <nav class="main-nav" [class.nav-hidden]="!isNavbarVisible">
     <div class="nav-container">
       <div class="brand" routerLink="/dashboard" (click)="goToDashboard()" role="button" tabindex="0" aria-label="Go to Dashboard">
         <h1 class="brand-name">

@@ -11,10 +11,21 @@
         <span class="label">Total Records</span>
       </div>
 
-      <button class="btn-clear-history" (click)="clearHistory()" [disabled]="isClearing || isLoading">
+      <button class="btn-clear-history" (click)="clearHistory()" [disabled]="isClearing || isLoading || selectedType === 'errors'">
         {{ isClearing ? 'Clearing...' : 'Clear History' }}
       </button>
     </div>
+  </div>
+
+  <!-- Type Selection Tabs -->
+  <div class="tabs-container">
+    <button *ngFor="let type of ['length', 'weight', 'temperature', 'volume', 'errors']"
+            class="tab-button"
+            [class.active]="selectedType === type"
+            [class.error-tab]="type === 'errors'"
+            (click)="selectType(type)">
+      {{ type | titlecase }}
+    </button>
   </div>
 
   <!-- States -->

@@ -235,6 +235,12 @@ export class QuantityMeasurementService {
     );
   }
 
+  getErroredHistory(): Observable<QuantityMeasurementDTO[]> {
+    return this.http.get<QuantityMeasurementDTO[]>(`${this.apiUrl}/history/errored`).pipe(
+      catchError((err) => this.handleApiError('getErroredHistory', err))
+    );
+  }
+
   clearHistoryByType(type: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/history/type/${type}`).pipe(
       tap(() => this.notifyHistoryChanged()),

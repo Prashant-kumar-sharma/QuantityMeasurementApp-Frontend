@@ -2,28 +2,28 @@
 @import 'ngx-toastr/toastr';
 
 :root {
-  /* Design Tokens - Premium Soft Dark Theme */
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --secondary: #9ca3af;
-  --accent: #3b82f6;
-  --background: #0f172a;
-  --surface: #111827;
-  --surface-hover: #1e293b;
-  --inner-bg: #020617; /* Level 3 Background */
-  --text-main: #f9fafb;
-  --text-muted: #9ca3af;
+  /* Design Tokens - Premium High-Contrast Dark Theme */
+  --primary: #0070f3;
+  --primary-hover: #3291ff;
+  --secondary: #a1a1aa;
+  --accent: #7928ca;
+  --background: #0a0a0a;
+  --surface: #121212;
+  --surface-hover: #1e1e1e;
+  --inner-bg: #000000; /* Level 3 Background */
+  --text-main: #ededed;
+  --text-muted: #a1a1aa;
   --error: #ef4444;
   --success: #10b981;
-  --border: #1f2937;
+  --border: #27272a;
   
   /* Dark Mode Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 12px 24px -6px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 24px -6px rgba(0, 0, 0, 0.6);
   
-  --radius: 8px;
-  --radius-lg: 10px;
+  --radius: 6px;
+  --radius-lg: 8px;
 }
 
 * {
