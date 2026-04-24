@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  gatewayBaseUrl: 'http://prashantlab.me:8080',
-  apiUrl: 'http://prashantlab.me:8080/api',
+  gatewayBaseUrl: 'http://13.60.215.51:8080',
+  apiUrl: 'http://13.60.215.51:8080/api',
   authEndpoints: {
     login: '/auth/login',
     register: '/auth/signup',
@@ -11,7 +11,7 @@ export const environment = {
     resetPassword: '/auth/reset-password'
   },
   oauth: {
-    googleAuthorizeUrl: 'http://prashantlab.me:8080/oauth2/authorize/google'
+    googleAuthorizeUrl: 'http://13.60.215.51:8080/oauth2/authorize/google'
   },
   storage: {
     authSessionKey: 'qm_auth_session'
